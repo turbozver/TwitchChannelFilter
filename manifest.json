@@ -1,0 +1,38 @@
+{
+    "name": "Twitch Channel Filter",
+    "description": "Hide Twitch sidebar channels by channel and category rules.",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["storage"],
+    "icons": {
+        "16": "icons/icon16.png",
+        "32": "icons/icon32.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "32": "icons/icon32.png",
+            "48": "icons/icon48.png"
+        },
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "run_at": "document_start",
+            "matches": ["https://www.twitch.tv/*"],
+            "js": ["content.js"],
+            "css": ["content.css"]
+        }
+    ],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "turbo@twitch-channel-filter",
+            "strict_min_version": "109.0",
+            "data_collection_permissions": {
+                "required": ["none"]
+            }
+        }
+    }
+}

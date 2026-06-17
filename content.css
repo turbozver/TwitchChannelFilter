@@ -1,0 +1,4 @@
+.tcf-hidden-channel,
+[data-tcf-hidden="true"] {
+    display: none !important;
+}

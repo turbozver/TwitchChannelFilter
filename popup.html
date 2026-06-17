@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Channel Filter</title>
+    <link rel="icon" href="icons/favicon.png">
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <header class="app-header">
+        <button id="navButton" class="icon-button" type="button" title="Settings" aria-label="Settings">&#9881;</button>
+        <div class="title-block">
+            <h1>Twitch Channel Filter</h1>
+            <p id="status">Disabled</p>
+        </div>
+        <label class="toggle" title="Enable Extension">
+            <input id="enabled" type="checkbox">
+            <span></span>
+        </label>
+    </header>
+
+    <main id="mainView" class="view">
+        <nav class="app-tabs" aria-label="Filter Sections">
+            <button class="active" data-page-tab="channels" type="button">Channels</button>
+            <button data-page-tab="categories" type="button">Categories</button>
+            <button data-page-tab="rules" type="button">Rules</button>
+        </nav>
+
+        <section class="panel page-panel active" data-page-panel="channels">
+            <div class="section-title">
+                <h2>Channels</h2>
+            </div>
+            <p class="hint">Use the Twitch login, for example <code>turbozverr</code>. These lists have the highest priority.</p>
+            <input id="channelSearchInput" class="rule-search" type="search" spellcheck="false" placeholder="Search Channels">
+
+            <div class="list-block">
+                <label for="channelAllowInput">Always Show</label>
+                <div class="add-row">
+                    <input id="channelAllowInput" data-add-input="channelAllowlist" type="text" spellcheck="false" placeholder="Channel Name">
+                    <button data-add-button="channelAllowlist" type="button">Add</button>
+                </div>
+                <div id="channelAllowlist" class="item-list empty" data-list="channelAllowlist"></div>
+            </div>
+
+            <div class="list-block">
+                <label for="channelBlockInput">Always Hide</label>
+                <div class="add-row">
+                    <input id="channelBlockInput" data-add-input="channelBlocklist" type="text" spellcheck="false" placeholder="Channel Name">
+                    <button data-add-button="channelBlocklist" type="button">Add</button>
+                </div>
+                <div id="channelBlocklist" class="item-list empty" data-list="channelBlocklist"></div>
+            </div>
+        </section>
+
+        <section class="panel page-panel" data-page-panel="categories" hidden>
+            <div class="section-title">
+                <h2>Global Categories</h2>
+            </div>
+            <p class="hint">Category names are case-insensitive and can match partially. For example, <code>counter</code> matches <code>Counter-Strike</code>. These rules are used after Channels and Per-Channel Rules.</p>
+            <input id="categorySearchInput" class="rule-search" type="search" spellcheck="false" placeholder="Search Categories">
+
+            <div class="category-shell">
+                <div class="category-tabs" role="tablist" aria-label="Global Category Mode">
+                    <button data-category-mode="off" type="button" role="tab">Off</button>
+                    <button data-category-mode="block" type="button" role="tab">Hide</button>
+                    <button data-category-mode="allow" type="button" role="tab">Show Only</button>
+                </div>
+
+                <div class="category-panels">
+                    <div class="category-panel" data-category-panel="off" role="tabpanel">
+                        <div class="category-page-title">
+                            <strong>Category filtering is disabled</strong>
+                            <span>Channel lists and channel rules still work.</span>
+                        </div>
+                    </div>
+
+                    <div class="category-panel" data-category-panel="block" role="tabpanel">
+                        <div class="category-page-title">
+                            <strong>Hide Categories</strong>
+                            <span>Hide any stream whose category partially matches this list.</span>
+                        </div>
+                        <div class="list-block">
+                            <label for="categoryBlockInput">Categories</label>
+                            <div class="add-row">
+                                <input id="categoryBlockInput" type="text" spellcheck="false" placeholder="Category Name">
+                                <button id="categoryBlockAdd" type="button">Add</button>
+                            </div>
+                            <div id="categoryBlockList" class="item-list empty"></div>
+                        </div>
+                    </div>
+
+                    <div class="category-panel" data-category-panel="allow" role="tabpanel">
+                        <div class="category-page-title">
+                            <strong>Show Only Categories</strong>
+                            <span>Show matching categories only. Empty list does not hide anything.</span>
+                        </div>
+                        <div class="list-block">
+                            <label for="categoryAllowInput">Categories</label>
+                            <div class="add-row">
+                                <input id="categoryAllowInput" type="text" spellcheck="false" placeholder="Category Name">
+                                <button id="categoryAllowAdd" type="button">Add</button>
+                            </div>
+                            <div id="categoryAllowList" class="item-list empty"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel page-panel" data-page-panel="rules" hidden>
+            <div class="section-title">
+                <h2>Per-Channel Rules</h2>
+            </div>
+            <p class="hint"><strong>Hide Matches</strong> hides this channel when the category matches. <strong>Show Only Matches</strong> hides this channel unless at least one allow rule matches.</p>
+
+            <div class="rule-editor">
+                <div class="rule-editor-grid">
+                    <input id="ruleChannelInput" type="text" spellcheck="false" placeholder="Channel Name">
+                    <div class="mini-mode">
+                        <button data-rule-draft-mode="block" type="button">Hide Matches</button>
+                        <button data-rule-draft-mode="allow" type="button">Show Only Matches</button>
+                    </div>
+                </div>
+                <div class="add-row">
+                    <input id="ruleCategoryInput" type="text" spellcheck="false" placeholder="Category Name">
+                    <button id="saveRule" type="button">Add</button>
+                </div>
+            </div>
+
+            <div class="list-toolbar">
+                <span>Saved Rules</span>
+            </div>
+            <div class="rules-controls">
+                <input id="ruleSearchInput" class="rule-search" type="search" spellcheck="false" placeholder="Search Channel or Category">
+                <div class="group-mode" role="radiogroup" aria-label="Rule Grouping">
+                    <button data-rule-group-mode="none" type="button">None</button>
+                    <button data-rule-group-mode="channel" type="button">Channel</button>
+                    <button data-rule-group-mode="category" type="button">Category</button>
+                </div>
+            </div>
+            <div id="rules" class="rules empty"></div>
+        </section>
+    </main>
+
+    <main id="settingsView" class="view hidden">
+        <section class="panel settings-panel">
+            <div class="section-title">
+                <h2>Settings</h2>
+            </div>
+
+            <div class="settings-stack">
+                <div class="settings-block">
+                    <div class="settings-block-title">
+                        <strong>About</strong>
+                    </div>
+
+                    <div class="settings-links">
+                        <a class="link-card" href="https://github.com/turbozver/TwitchChannelFilter" target="_blank" rel="noreferrer">
+                            <span class="link-icon github-icon" aria-hidden="true"></span>
+                            <span>
+                                <strong>GitHub</strong>
+                            </span>
+                        </a>
+
+                        <a class="link-card" href="mailto:turbozver24@gmail.com" target="_blank" rel="noreferrer">
+                            <span class="link-icon mail-icon" aria-hidden="true"></span>
+                            <span>
+                                <strong>Contact</strong>
+                                <small>turbozver24@gmail.com</small>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="settings-block">
+                    <div class="settings-block-title">
+                        <strong>Data</strong>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button id="importBtn" type="button">Import</button>
+                        <button id="exportBtn" type="button">Export</button>
+                        <button id="resetBtn" class="danger" type="button">Delete All Settings</button>
+                        <input id="importFile" type="file" accept="application/json" hidden>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <template id="itemTemplate">
+        <div class="list-item">
+            <span class="item-text"></span>
+            <button type="button" title="Remove" aria-label="Remove">&times;</button>
+        </div>
+    </template>
+
+    <template id="ruleTemplate">
+        <article class="rule-card">
+            <strong class="rule-channel"></strong>
+            <div class="rule-card-category"></div>
+            <button class="remove-rule" type="button" title="Remove Rule" aria-label="Remove Rule">&times;</button>
+        </article>
+    </template>
+
+    <script src="popup.js"></script>
+</body>
+</html>
