@@ -1,7 +1,7 @@
 {
     "name": "Twitch Channel Filter",
     "description": "Hide Twitch sidebar channels by channel and category rules.",
-    "version": "1.0",
+    "version": "1.1",
     "manifest_version": 3,
     "permissions": ["storage"],
     "icons": {
@@ -28,7 +28,7 @@
     ],
     "browser_specific_settings": {
         "gecko": {
-            "id": "turbo@twitch-channel-filter",
+            "id": "turbo@twitchchannelfilter",
             "strict_min_version": "109.0",
             "data_collection_permissions": {
                 "required": ["none"]

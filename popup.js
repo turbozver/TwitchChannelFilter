@@ -469,3 +469,10 @@ elements.resetBtn.addEventListener("click", async () => {
 });
 
 load();
+
+
+document.querySelectorAll("[data-rate-link]").forEach((link) => {
+    if (navigator.userAgent.includes("Firefox")) {
+        link.href = link.dataset.firefoxUrl;
+    }
+});
